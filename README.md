@@ -218,7 +218,7 @@ GH_Project/
 │   └── Makefile                     # Test compilation with AddressSanitizer support
 │
 ├── docs/screenshots/                # Visual verification screenshots for laboratory submission
-├── FinalReport_Group_103_106.tex    # Full IEEE/ACM-style LaTeX technical documentation
+├── FinalReport_Group_103_106.pdf    # Full Report
 └── README.md                        # Primary project documentation
 ```
 
