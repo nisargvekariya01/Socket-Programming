@@ -38,6 +38,8 @@ static std::unordered_map<std::string, EnhancedSessionState *>
     g_enhanced_sessions;
 static pthread_mutex_t g_enhanced_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+// Analogy: We put this socket on a speed dial, so we don't have to look it up
+// every time
 int set_socket_nonblocking(int sockfd) {
   int flags = fcntl(sockfd, F_GETFL, 0);
   if (flags < 0) {
@@ -52,6 +54,8 @@ int set_socket_nonblocking(int sockfd) {
   return 0;
 }
 
+// Analogy: We create a control panel (epoll) and tell it to watch over the main
+// phone line (listen_fd).
 int init_epoll_instance(int listen_fd) {
   if (set_socket_nonblocking(listen_fd) < 0) {
     log_event("ERROR", "set_socket_nonblocking failed on listen_fd=%d",
@@ -86,6 +90,10 @@ int init_epoll_instance(int listen_fd) {
   return epoll_fd;
 }
 
+// Analogy: We take a specific chunk (a small slice of the file),
+// attach a label (header) saying "This is file #X, starting at byte Y, size Z",
+// and then use a super-fast conveyor belt (sendfile) to slide it across.
+// We do this in a loop until the entire chunk is moved.
 ssize_t send_chunk_zerocopy(int client_fd, int file_fd,
                             const ChunkWorkUnit &unit, uint64_t *wire_counter) {
   uint8_t hdr[FILE_DATA_HEADER_SIZE]; // Exactly 24 bytes
@@ -134,6 +142,9 @@ ssize_t send_chunk_zerocopy(int client_fd, int file_fd,
   return static_cast<ssize_t>(unit.chunk_len);
 }
 
+// Analogy: We prepare a delivery manifest (the list of all 64 KiB chunks).
+// If someone asks for this topic later, we can quickly check if we've already
+// prepared the work for them.
 EnhancedSessionState *create_enhanced_session(const TopicEntry &entry,
                                               uint16_t num_streams,
                                               const uint8_t session_id[16]) {
@@ -188,6 +199,7 @@ EnhancedSessionState *create_enhanced_session(const TopicEntry &entry,
   return sess;
 }
 
+// Analogy: We check the manifest to see if this delivery ID exists.
 EnhancedSessionState *find_enhanced_session(const uint8_t session_id[16]) {
   char hex32[33];
   session_id_to_hex(session_id, hex32);
@@ -199,6 +211,8 @@ EnhancedSessionState *find_enhanced_session(const uint8_t session_id[16]) {
   return ptr;
 }
 
+// Analogy: Once the delivery is complete and confirmed, we throw away the
+// manifest.
 void free_enhanced_session(const uint8_t session_id[16]) {
   char hex32[33];
   session_id_to_hex(session_id, hex32);
@@ -213,6 +227,10 @@ void free_enhanced_session(const uint8_t session_id[16]) {
   pthread_mutex_unlock(&g_enhanced_mutex);
 }
 
+// Analogy: A specific delivery person (conn_id) comes up and asks, "What's
+// next?"
+// We check the manifest and hand them the next available task (chunk) in line.
+// We mark it as "In Progress" so no one else takes it.
 bool pop_next_chunk_unit(EnhancedSessionState *sess, uint32_t conn_id,
                          ChunkWorkUnit *out_unit) {
   if (!sess || !out_unit)
@@ -234,6 +252,9 @@ bool pop_next_chunk_unit(EnhancedSessionState *sess, uint32_t conn_id,
   return false;
 }
 
+// Analogy: A delivery person suddenly disappears (stream dies).
+// We go back to the manifest, find all the boxes they were carrying (chunks),
+// and mark them as "Ready Again" so someone else can pick them up.
 void requeue_stream_chunks(EnhancedSessionState *sess, int32_t conn_id) {
   if (!sess)
     return;
@@ -253,6 +274,9 @@ void requeue_stream_chunks(EnhancedSessionState *sess, int32_t conn_id) {
   }
 }
 
+// Analogy: We receive a confirmation sheet (bitmap) from the client,
+// marking which parts of the delivery are safely in their hands.
+// We update our manifest to reflect this.
 void apply_client_bitmap(EnhancedSessionState *sess, const uint8_t *bitmap,
                          uint32_t bmap_len) {
   if (!sess || !bitmap || bmap_len == 0)
@@ -277,6 +301,10 @@ void apply_client_bitmap(EnhancedSessionState *sess, const uint8_t *bitmap,
   }
 }
 
+// Analogy: We assign a specific delivery person (conn_id) to a specific task
+// (chunk). We use a super-fast conveyor belt (sendfile) to move the goods.
+// If the delivery person drops everything, we put the items back on the shelf
+// (requeue).
 static int serve_substream_session(int client_fd, const TopicEntry &entry,
                                    EnhancedSessionState *sess, uint32_t conn_id,
                                    double pf, uint64_t *wire_counter) {
@@ -366,6 +394,10 @@ static int serve_substream_session(int client_fd, const TopicEntry &entry,
   return 0;
 }
 
+// Analogy: We wait for new delivery people (new connections).
+// We "attach" them to specific delivery manifests (topics) they ask for.
+// As they work, we monitor them: if they drop everything, we clean up.
+// If they finish, we confirm the delivery and send them away.
 int run_enhanced_epoll_server_loop(
     int listen_fd, const std::unordered_map<std::string, TopicEntry> &topic_map,
     double pf, uint32_t seed) {
@@ -450,8 +482,9 @@ int run_enhanced_epoll_server_loop(
   return 0;
 }
 
-// Hook called by concurrency.cpp process_client for Enhanced opcodes 0x0C and
-// 0x0D
+// Analogy: When a customer asks for a VIP delivery (Enhanced), we create a
+// special Express Lane for them (EnhancedSessionState) and use a high-speed
+// tram (epoll) to serve them.
 int process_enhanced_opcodes(
     int client_fd, const FrameHeader &hdr, const std::vector<uint8_t> &payload,
     const std::unordered_map<std::string, TopicEntry> &topic_map, double pf,
