@@ -58,7 +58,7 @@ enum Opcode : uint8_t {
   OP_ASSIGN_WORK = 0x0E // S -> C: [conn_id:u32][start_unit:u32][end_unit:u32]
 };
 
-// Member 1: Server Directory Mapping & Concurrency Structures
+// Server Directory Mapping & Concurrency Structures
 struct FileMeta {
   std::string filename; // Base file name (e.g., "eb10001.jpg")
   std::string
