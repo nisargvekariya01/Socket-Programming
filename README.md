@@ -11,14 +11,14 @@
 
 ## 👥 Group Members & Contribution Matrix
 
-| Member Designation | Subsystem Role | Core Coding Responsibilities | System, Testing & Documentation Tasks | Viva Complexity Level |
-|:---|:---|:---|:---|:---:|
-| **Member 1** | Directory Mapping & Client Stress Testing | `directory_mapper.{h,cpp}`: POSIX directory scanning (`opendir`, `readdir`), file metadata hashing, deterministic sorting | Multi-client stress testing ($N=1 \dots 32$), payload integrity verification, test dataset setup | **Easy (Beginner-Friendly)** |
-| **Member 2** | Fault Simulation & Technical Documentation | `fault.{h,cpp}` & `Part2_Case1/client.cpp`: Random drop generator ($r < P_f$), basic retry loop (max 50 trials) | Comprehensive documentation, LaTeX final report formatting, tabular evaluation, presentation defense | **Easy (Beginner-Friendly)** |
-| **Member 3** | Binary Wire Protocol & Framing Codecs | `protocol.{h,cpp}`: 8-byte preamble header, big-endian network serialization (`htons`, `htonl`, `htobe64`), opcode codecs | Protocol unit tests (`test_protocol.cpp`), wire framing conformance validation | **Moderate** |
-| **Member 4** | Part 1 Concurrency & Server Worker Pools | `Part1/concurrency.{h,cpp}` & `server.cpp`: Thread-per-client POSIX thread pool, `accept()` loops, socket buffer tuning | Concurrency benchmarking, kernel socket options (`TCP_NODELAY`, 256 KiB buffers) | **Moderate** |
-| **Member 5** | Case 2 Stateful Session & Checkpoint Engine | `Part2_Case2/session.{h,cpp}` & `checkpoint.{h,cpp}`: 128-bit UUID generation, 3-step `fsync` atomic commit, `lseek()` resume | Durability testing (`test_session_ckpt.cpp`), crash-consistency validation | **Advanced** |
-| **Member 6** | Case 2 Enhanced Epoll & Parallel Streaming | `enhanced_epoll_server.{h,cpp}`, `enhanced_parallel_client.{h,cpp}`, `plot_results.py`: Non-blocking epoll, 4 TCP streams, 64 KiB chunk queues, bitmasks | Automated benchmark scripting (`run_benchmarks.sh`), performance analytics, plot generation | **Advanced** |
+| Member Designation | Subsystem Role | Core Coding Responsibilities | System, Testing & Documentation Tasks |
+|:---|:---|:---|:---|
+| **Member 1** | Directory Mapping & Client Stress Testing | `directory_mapper.{h,cpp}`: POSIX directory scanning (`opendir`, `readdir`), file metadata hashing, deterministic sorting | Multi-client stress testing ($N=1 \dots 32$), payload integrity verification, test dataset setup |
+| **Member 2** | Fault Simulation & Technical Documentation | `fault.{h,cpp}` & `Part2_Case1/client.cpp`: Random drop generator ($r < P_f$), basic retry loop (max 50 trials) | Comprehensive documentation, LaTeX final report formatting, tabular evaluation, presentation defense |
+| **Member 3** | Binary Wire Protocol & Framing Codecs | `protocol.{h,cpp}`: 8-byte preamble header, big-endian network serialization (`htons`, `htonl`, `htobe64`), opcode codecs | Protocol unit tests (`test_protocol.cpp`), wire framing conformance validation |
+| **Member 4** | Part 1 Concurrency & Server Worker Pools | `Part1/concurrency.{h,cpp}` & `server.cpp`: Thread-per-client POSIX thread pool, `accept()` loops, socket buffer tuning | Concurrency benchmarking, kernel socket options (`TCP_NODELAY`, 256 KiB buffers) |
+| **Member 5** | Case 2 Stateful Session & Checkpoint Engine | `Part2_Case2/session.{h,cpp}` & `checkpoint.{h,cpp}`: 128-bit UUID generation, 3-step `fsync` atomic commit, `lseek()` resume | Durability testing (`test_session_ckpt.cpp`), crash-consistency validation |
+| **Member 6** | Case 2 Enhanced Epoll & Parallel Streaming | `enhanced_epoll_server.{h,cpp}`, `enhanced_parallel_client.{h,cpp}`, `plot_results.py`: Non-blocking epoll, 4 TCP streams, 64 KiB chunk queues, bitmasks | Automated benchmark scripting (`run_benchmarks.sh`), performance analytics, plot generation |
 
 ---
 
